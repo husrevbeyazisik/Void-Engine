@@ -1,4 +1,8 @@
 #include <windows.h>
+#include "Graphics.h"
+
+
+Graphics* graphics;
 
 HWND windowHandle;
 
@@ -8,53 +12,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_PAINT:
 	{
-		PAINTSTRUCT ps;
-		BeginPaint(hwnd, &ps);
+		graphics->BeginDraw();
 
-		// Obtain the size of the drawing area.
-		RECT rc;
-		GetClientRect(
-			hwnd,
-			&rc
-		);
+		graphics->ClearScreen(0.0f, 0.0f, 0.5f);
 
-		// Save the original object
-		HGDIOBJ original = NULL;
-		original = SelectObject(
-			ps.hdc,
-			GetStockObject(DC_PEN)
-		);
+		graphics->DrawCircle(100, 100, 50, 1.0f, 0.0, 0.0, 1.0);
 
-		// Create a pen.            
-		HPEN blackPen = CreatePen(PS_SOLID, 3, 0);
-
-		// Select the pen.
-		SelectObject(ps.hdc, blackPen);
-
-		// Draw a rectangle.
-		Rectangle(
-			ps.hdc,
-			rc.left + 100,
-			rc.top + 100,
-			rc.right - 100,
-			rc.bottom - 100);
-
-		DeleteObject(blackPen);
-
-		// Restore the original object
-		SelectObject(ps.hdc, original);
-
-		EndPaint(hwnd, &ps);
+		graphics->EndDraw();
 		break;
 	}
+
 	case WM_CLOSE: {
 		DestroyWindow(hwnd);
 		break;
 	}
+
 	case WM_DESTROY: {
 		PostQuitMessage(0);
 		break;
 	}
+
 	default:
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
@@ -81,13 +58,17 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 
 	RegisterClassEx(&wc);
 
+
+	RECT rect = { 0, 0, 800, 600 };
+	AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, false, WS_EX_OVERLAPPEDWINDOW);
+
 	windowHandle = CreateWindowEx(
-						WS_EX_ACCEPTFILES,
+						WS_EX_OVERLAPPEDWINDOW,
 						"Vengine Class",
 						"First Window!",
 						WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 						100, 100,
-						500, 500,
+						rect.right - rect.left, rect.bottom - rect.top,
 						0,
 						0,
 						hInstance,
@@ -96,6 +77,16 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 
 	if (windowHandle == 0)
 		MessageBox(0, "Create Window failed!", "error", 0);
+
+
+	// Init graphics
+	graphics = new Graphics();
+
+	if (!graphics->Init(windowHandle))
+	{
+		delete graphics;
+		return -1;
+	}
 
 
 	ShowWindow(windowHandle, showCmd);
@@ -120,6 +111,8 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 		DispatchMessage(&msg);
 
 	}
+
+	delete graphics;
 
 	return (int)msg.wParam;
 }
