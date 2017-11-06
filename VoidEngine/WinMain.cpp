@@ -1,7 +1,10 @@
-#include <windows.h>
+#pragma once
+#include <Windows.h>
+#include "Vengine.h"
 #include "Graphics.h"
 
 
+Vengine* vengine;
 Graphics* graphics;
 
 HWND windowHandle;
@@ -67,6 +70,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 	if (windowHandle == 0)
 		MessageBox(0, "Create Window failed!", "error", 0);
 
+	// Init engine
+	vengine = new Vengine();
+	vengine->Start();
 
 	// Init graphics
 	graphics = new Graphics();
@@ -78,11 +84,10 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 	}
 
 
+
 	ShowWindow(windowHandle, showCmd);
 	UpdateWindow(windowHandle);
 
-	float y = 0.0;
-	float ySpeed = 0.0f;
 
 
 
@@ -97,26 +102,14 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 		}
 		else
 		{
-			//Update
-			ySpeed += 1.0f;
-			y += ySpeed;
-			if (y > 600)
-			{
-				y = 600;
-				ySpeed = -30.0f;
-			}
+	
+			vengine->Update();
 
-
-			//Render
 			graphics->BeginDraw();
 
-			graphics->ClearScreen(0.0f, 0.0f, 0.5f);
-
-			graphics->DrawCircle(375.0f, y, 50.0f, 1.0f, 0.0, 0.0, 1.0);
+			vengine->Render(graphics);
 
 			graphics->EndDraw();
-
-
 			
 		}
 	}

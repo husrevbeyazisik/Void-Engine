@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Windows.h>
 #include <d2d1.h>
 
@@ -10,6 +9,8 @@ class Graphics
 public:
 	Graphics();
 	~Graphics();
+
+	ID2D1HwndRenderTarget* getRenderTarget();
 
 	bool Init(HWND windowHandle);
 	void BeginDraw() { renderTarget->BeginDraw(); }

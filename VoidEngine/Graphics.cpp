@@ -1,3 +1,4 @@
+#pragma once
 #include "Graphics.h"
 
 Graphics::Graphics()
@@ -12,6 +13,13 @@ Graphics::~Graphics()
 	if (factory) factory->Release();
 	if (renderTarget) renderTarget->Release();
 }
+
+
+ID2D1HwndRenderTarget* Graphics::getRenderTarget()
+{
+	return renderTarget;
+}
+
 
 
 bool Graphics::Init(HWND windowHandle)
