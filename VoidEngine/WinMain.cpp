@@ -10,17 +10,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
-	case WM_PAINT:
-	{
-		graphics->BeginDraw();
-
-		graphics->ClearScreen(0.0f, 0.0f, 0.5f);
-
-		graphics->DrawCircle(100, 100, 50, 1.0f, 0.0, 0.0, 1.0);
-
-		graphics->EndDraw();
-		break;
-	}
 
 	case WM_CLOSE: {
 		DestroyWindow(hwnd);
@@ -90,27 +79,48 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE prevInstance,PSTR cmdLine,int s
 
 
 	ShowWindow(windowHandle, showCmd);
-
 	UpdateWindow(windowHandle);
+
+	float y = 0.0;
+	float ySpeed = 0.0f;
+
 
 
 	MSG msg;
+	msg.message = WM_NULL;
 
-	SecureZeroMemory(&msg, sizeof(MSG));
-	int returnValue = 0;
-
-	while ((returnValue = GetMessage(&msg, 0, 0, 0)) != 0)
+	while (msg.message != WM_QUIT)
 	{
-		if (returnValue == -1)
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) //not waiting for message
 		{
-			MessageBox(windowHandle, "GetMessage failed!", "error", 0);
-			break;
+			DispatchMessage(&msg);
 		}
+		else
+		{
+			//Update
+			ySpeed += 1.0f;
+			y += ySpeed;
+			if (y > 600)
+			{
+				y = 600;
+				ySpeed = -30.0f;
+			}
 
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
 
+			//Render
+			graphics->BeginDraw();
+
+			graphics->ClearScreen(0.0f, 0.0f, 0.5f);
+
+			graphics->DrawCircle(375.0f, y, 50.0f, 1.0f, 0.0, 0.0, 1.0);
+
+			graphics->EndDraw();
+
+
+			
+		}
 	}
+
 
 	delete graphics;
 
