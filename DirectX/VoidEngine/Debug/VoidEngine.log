@@ -1,0 +1,6 @@
+﻿  WinMain.cpp
+  Vengine.cpp
+  Graphics.cpp
+  Generating Code...
+c:\projects\void-engine\directx\voidengine\winmain.cpp(30): warning C4715: 'WndProc': not all control paths return a value
+  VoidEngine.vcxproj -> C:\projects\Void-Engine\DirectX\VoidEngine\Debug\VoidEngine.exe
